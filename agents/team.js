@@ -206,7 +206,9 @@ Team.prototype.addPackages = function(opts) {
     };
   });
   var url = USER_HOST + '/team/' + opts.scope + '/' + encodeURIComponent(opts.id) + '/package';
-  return P.promisify(Request.put)({
+  return P.promisify(Request.put, {
+    multiArgs: true
+  })({
     url: url,
     json: true,
     body: {
