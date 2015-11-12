@@ -72,7 +72,7 @@ Team.prototype.get = function(opts, callback) {
 
     return team;
 
-  }).nodeify(callback);
+  }).asCallback(callback);
 };
 
 Team.prototype.getUsers = function(opts) {
@@ -199,7 +199,7 @@ Team.prototype.addPackage = function(opts) {
 
 Team.prototype.addPackages = function(opts) {
   opts = opts || {};
-  var packages = (opts.packages || []).map(function (xs) {
+  var packages = (opts.packages || []).map(function(xs) {
     return {
       name: xs.name,
       permissions: xs.permissions
@@ -215,14 +215,16 @@ Team.prototype.addPackages = function(opts) {
     headers: {
       bearer: this.bearer
     }
-  }).spread(function (resp, body) {
+  }).spread(function(resp, body) {
     if (resp.statusCode >= 400) {
       throw _.extend(new Error(
         resp.statusCode === 400 ? body.error :
-        resp.statusCode === 401 ? 'user is unauthorized to perform this action' :
-        resp.statusCode === 404 ? 'Team or Org not found' :
-        body.error
-      ), {statusCode: resp.statusCode});
+          resp.statusCode === 401 ? 'user is unauthorized to perform this action' :
+            resp.statusCode === 404 ? 'Team or Org not found' :
+              body.error
+      ), {
+        statusCode: resp.statusCode
+      });
     }
     return body;
   })
@@ -321,7 +323,7 @@ Team.prototype._addUser = function(opts, callback) {
 
       return accept(body);
     });
-  }).nodeify(callback);
+  }).asCallback(callback);
 };
 
 Team.prototype.addUsers = function(opts, callback) {
@@ -343,7 +345,7 @@ Team.prototype.addUsers = function(opts, callback) {
     });
   });
 
-  return P.all(requests).nodeify(callback);
+  return P.all(requests).asCallback(callback);
 };
 
 Team.prototype.removeUser = function(opts) {
@@ -404,7 +406,9 @@ Team.prototype.removeTeam = function(opts) {
 
   var data = {
     body: {},
-    headers: {bearer: this.bearer},
+    headers: {
+      bearer: this.bearer
+    },
     json: true,
     url: url
   };
