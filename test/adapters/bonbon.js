@@ -63,6 +63,9 @@ var registryMock = nock("https://skimdb.npmjs.com")
   .get(/.*/).times(12)
   .reply(500, '');
 
+var requireInject = require('require-inject');
+var redisMock = require('redis-mock');
+
 before(function(done) {
   redisMock.createClient().flushall();
   requireInject.installGlobally('../mocks/server', {
@@ -78,6 +81,7 @@ after(function(done) {
   licenseMock.done();
   downloadsMock.done();
   registryMock.done();
+  redisMock.createClient().flushall();
   done();
 });
 
